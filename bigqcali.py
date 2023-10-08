@@ -1,17 +1,13 @@
 from google.cloud import bigquery
 
 
-def query_cbsa(year, ):
+def query_cbsa(year):
     client = bigquery.Client()
     query_job = client.query(
-        """
-        SELECT
-          CONCAT(
-            'https://stackoverflow.com/questions/',
-            CAST(id as STRING)) as url,
-          view_count
+        f"""
+        SELECT *
         FROM `bigquery-public-data.census_bureau_acs`
-        WHERE tags like '%google-bigquery%'
+        WHERE do_date LIKE '%re{year}'
         ORDER BY view_count DESC
         LIMIT 10"""
     )
@@ -23,4 +19,4 @@ def query_cbsa(year, ):
 
 
 if __name__ == "__main__":
-    query_stackoverflow()
+    query_cbsa()
