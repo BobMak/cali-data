@@ -74,15 +74,18 @@ st.pyplot(fig)
 if "ranges" not in st.session_state:
     st.session_state.ranges = get_range_columns(st.session_state.columns)
 st.sidebar.title("Range Variables")
-st.session_state.range_selected = st.sidebar.selectbox("Range Var", list(st.session_state.ranges.keys()), index=0)
-st.session_state.y_selected     = st.sidebar.selectbox("Y Variable", columns, index=0)
+st.session_state.range_selected = st.sidebar.selectbox("Range Var", list(st.session_state.ranges.keys()), index=1)
+st.session_state.y_selected     = st.sidebar.selectbox("Y Variable", columns, index=4)
 
 # range plot
 fig, ax = plt.subplots(figsize=(10, 8))
-sns.barplot(
-    st.session_state.data,
-    x=st.session_state.range_selected,
-    y=st.session_state.y_selected
+range_cols = st.session_state.ranges[st.session_state.range_selected]
+mean_y_data = st.session_state.data.groupby(st.session_state.y_selected)[range_cols].mean().mean()
+range_plt = sns.barplot(
+    x=range_cols,
+    y=mean_y_data
 )
+for item in range_plt.get_xticklabels():
+    item.set_rotation(45)
 st.title("Range Plot")
 st.pyplot(fig)

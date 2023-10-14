@@ -81,5 +81,9 @@ def get_range_columns(df):
 
 
 if __name__ == "__main__":
-    df = query_columns(2015)
-    print(get_range_columns(df))
+    df_cols = query_columns(2015)
+    df_data = query_cali_censustract(2015)
+    range_cols = get_range_columns(df_cols)['median']
+    y_col = 'one_car'
+    mean_y_data = df_data.groupby(y_col)[range_cols].mean().mean()
+    print(mean_y_data)
