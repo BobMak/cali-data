@@ -19,7 +19,7 @@ def get_us_county_data(year, state='06', download=True):
     # Save as GeoJSON for folium to use
     gdf.to_file(geojson_name, driver="GeoJSON")
     # remove the zip
-    os.system(f"rm -rf {filename}")
+    os.system(f"rm -rf {filename}.zip tmp/{filename}.dbf tmp/{filename}.prj tmp/{filename}.shx")
 
 
 if __name__ == "__main__":

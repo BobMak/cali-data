@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from streamlit_folium import folium_static
 
 from califolium import get_map
-from bigqcali import query_columns, query_cali_censustract
+from bigqcali import query_columns, query_cali_censustract, get_range_columns
 import seaborn as sns
 
 
@@ -22,21 +22,12 @@ st.sidebar.title("Map")
 st.sidebar.markdown("Will query five years of data prior to the selected year")
 year = st.sidebar.slider("Year", 2010, 2020, 2011)
 # available columns
-@st.cache_data
-def get_columns(year):
-    return query_columns(year, cache=True)
 if "columns" not in st.session_state:
-    st.session_state.columns = get_columns(year)
-@st.cache_data
-def get_data(year):
-    return query_cali_censustract(year, cache=True)
+    st.session_state.columns = query_columns(year, cache=True)
 if "data" not in st.session_state:
-    st.session_state.data = get_data(year)
-@st.cache_data
-def get_geojson(year):
-    return gpd.read_file(f"cali{year}.geojson")
+    st.session_state.data = query_cali_censustract(year, cache=True)
 if "gdb" not in st.session_state:
-    st.session_state.gdb = get_geojson(year)
+    st.session_state.gdb = gpd.read_file(f"cali{year}.geojson")
 
 @st.cache_resource
 def generate_map(year, column):
@@ -77,4 +68,21 @@ corr = st.session_state.data[st.session_state.selected].corr()
 fig, ax = plt.subplots(figsize=(10, 8))
 sns.heatmap(corr, annot=False, cmap='coolwarm', vmin=-1, vmax=1, ax=ax)
 st.title("Correlation Matrix Heatmap")
+st.pyplot(fig)
+
+# range variables
+if "ranges" not in st.session_state:
+    st.session_state.ranges = get_range_columns(st.session_state.columns)
+st.sidebar.title("Range Variables")
+st.session_state.range_selected = st.sidebar.selectbox("Range Var", list(st.session_state.ranges.keys()), index=0)
+st.session_state.y_selected     = st.sidebar.selectbox("Y Variable", columns, index=0)
+
+# range plot
+fig, ax = plt.subplots(figsize=(10, 8))
+sns.barplot(
+    st.session_state.data,
+    x=st.session_state.range_selected,
+    y=st.session_state.y_selected
+)
+st.title("Range Plot")
 st.pyplot(fig)
