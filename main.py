@@ -84,7 +84,9 @@ mean_y_data = st.session_state.data.groupby(st.session_state.y_selected)[range_c
 range_plt = sns.barplot(
     x=range_cols,
     y=mean_y_data
+
 )
+range_plt.set(ylabel=st.session_state.y_selected)
 for item in range_plt.get_xticklabels():
     item.set_rotation(45)
 st.title("Range Plot")
